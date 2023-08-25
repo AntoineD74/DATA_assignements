@@ -86,28 +86,79 @@ def _compare_components_and_mixture():
     plt.show()
     
    
-"""
+# Part 3.1
 def sample_gaussian_mixture(sigmas: list, mus: list, weights: list, n_samples: int = 500):
-    # Part 3.1
+    np.random.seed(0)
+    nb_normal_components = np.random.multinomial(n_samples, weights)
+    allRandoms = []
+    for i in range(len(nb_normal_components)):
+        for j in range(nb_normal_components[i]):
+            random_normal = np.random.normal(mus[i], sigmas[i])
+            allRandoms.append(random_normal)
+    randoms_array = np.array(allRandoms)
+    return randoms_array
+    
 
+# Part 3.2   
 def _plot_mixture_and_samples():
-    # Part 3.2
-"""
+    def plot_mixture(x: np.ndarray, sigmas: list, mus: list, weights: list):
+        sum = 0
+        for i in range(len(weights)):
+            elem1 = weights[i] / (np.sqrt(2 * np.pi * np.power(sigmas[i], 2)))
+            toExp = -(np.power((x - mus[i]), 2)) / (2 * np.power(sigmas[i], 2))
+            elem2 = np.exp(toExp)
+            sum += elem1*elem2
+        plt.plot(x_range, sum, label='Mixture')
+    sigmas = [0.3, 0.5, 1]
+    mus = [0, -1, 1.5]
+    weights = [0.2, 0.3, 0.5]
+    x_range = np.linspace(-5, 5, 10)
+    
+    plt.figure(figsize=(16, 6))
+    plt.subplot(141)
+    plt.hist(sample_gaussian_mixture(sigmas, mus, weights, 10), density=True)
+    plot_mixture(np.linspace(-2, 3, 10), sigmas, mus, weights)    #plt.plot(normal_mixture(np.linspace(-2, 3, 10), sigmas, mus, weights))
+    
+    plt.subplot(142)
+    plt.hist(sample_gaussian_mixture(sigmas, mus, weights, 100), 100, density=True)
+    plot_mixture(np.linspace(-2, 3, 10), sigmas, mus, weights)
+    
+    plt.subplot(143)
+    plt.hist(sample_gaussian_mixture(sigmas, mus, weights, 500), 100, density=True)
+    plot_mixture(np.linspace(-2, 3, 10), sigmas, mus, weights)
+    
+    plt.subplot(144)
+    plt.hist(sample_gaussian_mixture(sigmas, mus, weights, 1000), 100, density=True)
+    plot_mixture(np.linspace(-2, 3, 10), sigmas, mus, weights)
+
 
 if __name__ == '__main__':
-    """
+    
     #Test 1.1
+    print("[+]Results part 1.1")
     print(normal(0, 1, 0))
     print(normal(3, 1, 5))
     print(normal(np.array([-1,0,1]), 1, 0))
     
     #Tests 1.2
+    print("\n[+]Results part 1.2 : plotting...")
     plot_normal(0.5, 0, -2, 2)
     _plot_three_normals()
     
     #Tests 2.1
+    print("\n[+]Results part 2.1")
     print(normal_mixture(np.linspace(-5, 5, 5), [0.5, 0.25, 1], [0, 1, 1.5], [1/3, 1/3, 1/3]))
     print(normal_mixture(np.linspace(-2, 2, 4), [0.5], [0], [1]))
-    """
+    
     #Test 2.2
+    print("[+]Results part 2.2")
     _compare_components_and_mixture()
+    
+    #Test 3.1
+    print("\n[+]Results part 3.1")
+    print(sample_gaussian_mixture([0.1, 1], [-1, 1], [0.9, 0.1], 3))
+    print(sample_gaussian_mixture([0.1, 1, 1.5], [1, -1, 5], [0.1, 0.1, 0.8], 10))
+    
+    #Test 3.2
+    print("\n[+]Results part 3.2 : plotting...")
+    _plot_mixture_and_samples()
