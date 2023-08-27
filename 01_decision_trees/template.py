@@ -1,7 +1,7 @@
-# Author: 
-# Date:
-# Project: 
-# Acknowledgements: 
+# Author: Antoine DUPUIS
+# Date: 27/08/2023
+# Project: DATA lecture assignement
+# Acknowledgements: /
 #
 
 
@@ -12,31 +12,40 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree
 
 from tools import load_iris, split_train_test
 
-
+#Part 1.1
 def prior(targets: np.ndarray, classes: list) -> np.ndarray:
     '''
     Calculate the prior probability of each class type
     given a list of all targets and all class types
     '''
-    ...
+    numberTrues = 0
+    output = [0] * len(classes)
+    total = len(targets)
+    for i in range(len(targets)):
+        output[targets[i]]+=1
+        
+    for j in range(len(output)):
+        output[j]/=total
+        
+    return output
 
 
-def split_data(
-    features: np.ndarray,
-    targets: np.ndarray,
-    split_feature_index: int,
-    theta: float
-) -> Union[tuple, tuple]:
+def split_data(features: np.ndarray, targets: np.ndarray, split_feature_index: int, theta: float) -> Union[tuple, tuple]:
     '''
     Split a dataset and targets into two seperate datasets
     where data with split_feature < theta goes to 1 otherwise 2
     '''
-    features_1 = features[...]
-    targets_1 = targets[...]
+    split_feature = features[:, split_feature_index]
+    
+    mask_1 = split_feature <= theta #Conditional masks applied
+    mask_2 = split_feature > theta
+    
+    features_1 = features[mask_1]   
+    targets_1 = targets[mask_1]
 
-    features_2 = features[...]
-    targets_2 = targets[...]
-
+    features_2 = features[mask_2]
+    targets_2 = targets[mask_2]
+    
     return (features_1, targets_1), (features_2, targets_2)
 
 
@@ -139,3 +148,31 @@ class IrisTreeTrainer:
 
     def confusion_matrix(self):
         ...
+        
+if __name__ == '__main__':
+    
+    #Test 1.1
+    print("[+]Part 1.1")
+    print(prior([0, 0, 1], [0, 1]))
+    print(prior([0, 2, 3, 3], [0, 1, 2, 3]))
+    
+    #Test 1.2
+    print("\n[+]Part 1.2")
+    features, targets, classes = load_iris()
+    (f_1, t_1), (f_2, t_2) = split_data(features, targets, 2, 4.65)
+    print("Samples in f_1:", f_1.shape[0])  # Should be 90
+    print("Samples in f_2:", f_2.shape[0])  # Should be 60
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
