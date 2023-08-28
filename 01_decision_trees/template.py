@@ -86,15 +86,11 @@ def total_gini_impurity(features: np.ndarray, targets: np.ndarray, classes: list
     Calculate the gini impurity for a split on split_feature_index
     for a given dataset of features and targets.
     '''
-    ...
+    (feat_1, targ_1), (feat_2, targ_2) = split_data(features, targets, split_feature_index, theta)
+    return weighted_impurity(targ_1, targ_2, classes)
 
 
-def brute_best_split(
-    features: np.ndarray,
-    targets: np.ndarray,
-    classes: list,
-    num_tries: int
-) -> Union[float, int, float]:
+def brute_best_split(features: np.ndarray, targets: np.ndarray, classes: list, num_tries: int) -> Union[float, int, float]:
     '''
     Find the best split for the given data. Test splitting
     on each feature dimension num_tries times.
@@ -103,14 +99,24 @@ def brute_best_split(
     the threshold
     '''
     best_gini, best_dim, best_theta = float("inf"), None, None
+    
     # iterate feature dimensions
     for i in range(features.shape[1]):
-        # create the thresholds
-        thetas = ...
+
+        min_value = features[:, i].min()
+        max_value = features[:, i].max()
+        thetas = np.linspace(min_value, max_value, num_tries+2)[1:-1]   # generate tresholds     
+        
         # iterate thresholds
         for theta in thetas:
-            ...
-    return best_gini, best_dim, best_theta
+            gini_impurity = total_gini_impurity(features, targets, classes, i, theta)
+            
+            if gini_impurity < best_gini:
+                best_gini = gini_impurity
+                best_threshold = theta
+                best_dim = i
+    
+    return best_gini, best_dim, best_threshold
 
 
 class IrisTreeTrainer:
@@ -175,8 +181,13 @@ if __name__ == '__main__':
     print("\n[+]Part 1.4")
     print(weighted_impurity(t_1, t_2, classes))
     
+    #Test 1.5
+    print("\n[+]Part 1.5")
+    print(total_gini_impurity(features, targets, classes, 2, 4.65))
     
-    
+    #Test 1.6
+    print("\n[+]Part 1.6")
+    print(brute_best_split(features, targets, classes, 30))
     
     
     
