@@ -54,28 +54,31 @@ def gini_impurity(targets: np.ndarray, classes: list) -> float:
     Calculate:
         i(S_k) = 1/2 * (1 - sum_i P{C_i}**2)
     '''
-    ...
+    nb_samples = len(targets)
+    sumPC = 0
+    for i in classes:
+        current_s = np.count_nonzero(targets == i)/nb_samples
+        sumPC += np.power(current_s, 2)
+    
+    return (0.5*(1-sumPC))
 
 
-def weighted_impurity(
-    t1: np.ndarray,
-    t2: np.ndarray,
-    classes: list
-) -> float:
+def weighted_impurity(t1: np.ndarray, t2: np.ndarray, classes: list) -> float:
     '''
     Given targets of two branches, return the weighted
     sum of gini branch impurities
     '''
-    g1 = gini_impurity(...)
-    g2 = gini_impurity(...)
+    g1 = gini_impurity(t1, classes)
+    g2 = gini_impurity(t2, classes)
+    
+    numerator1 = t1.shape[0] * g1
+    numerator2 = t2.shape[0] * g2
+    
     n = t1.shape[0] + t2.shape[0]
-    ...
+    return ((numerator1 + numerator2)/n)
 
 
-def total_gini_impurity(
-    features: np.ndarray,
-    targets: np.ndarray,
-    classes: list,
+def total_gini_impurity(features: np.ndarray, targets: np.ndarray, classes: list,
     split_feature_index: int,
     theta: float
 ) -> float:
@@ -160,11 +163,17 @@ if __name__ == '__main__':
     print("\n[+]Part 1.2")
     features, targets, classes = load_iris()
     (f_1, t_1), (f_2, t_2) = split_data(features, targets, 2, 4.65)
-    print("Samples in f_1:", f_1.shape[0])  # Should be 90
-    print("Samples in f_2:", f_2.shape[0])  # Should be 60
+    print("Samples in f_1:", f_1.shape[0])
+    print("Samples in f_2:", f_2.shape[0])
     
+    #Test 1.3
+    print("\n[+]Part 1.3")
+    print(gini_impurity(t_1, classes))
+    print(gini_impurity(t_2, classes))
     
-    
+    #Test 1.4
+    print("\n[+]Part 1.4")
+    print(weighted_impurity(t_1, t_2, classes))
     
     
     
