@@ -113,10 +113,10 @@ def brute_best_split(features: np.ndarray, targets: np.ndarray, classes: list, n
             
             if gini_impurity < best_gini:
                 best_gini = gini_impurity
-                best_threshold = theta
+                best_theta = theta
                 best_dim = i
     
-    return best_gini, best_dim, best_threshold
+    return best_gini, best_dim, best_theta
 
 
 class IrisTreeTrainer:
@@ -132,20 +132,26 @@ class IrisTreeTrainer:
         be dedicated to training.
         '''
         (self.train_features, self.train_targets),\
-            (self.test_features, self.test_targets) =\
-            split_train_test(features, targets, train_ratio)
+            (self.test_features, self.test_targets) = split_train_test(features, targets, train_ratio)
 
         self.classes = classes
         self.tree = DecisionTreeClassifier()
 
     def train(self):
-        ...
+        self.tree.fit(self.train_features, self.train_targets)
 
     def accuracy(self):
-        ...
-
+        predictions = self.tree.predict(self.test_features)
+        correct_predictions = np.sum(predictions == self.test_targets)  #number right prediction
+        total_samples = len(self.test_targets)
+        accuracy = correct_predictions / total_samples
+        
+        return accuracy
+    
     def plot(self):
-        ...
+        plt.figure(figsize=(20, 10))
+        plot_tree(self.tree, filled=True)
+        plt.show()
 
     def plot_progress(self):
         # Independent section
@@ -153,11 +159,18 @@ class IrisTreeTrainer:
         ...
 
     def guess(self):
-        ...
+        return self.tree.predict(self.test_features)
 
     def confusion_matrix(self):
-        ...
+        predictions = self.guess()
+        confusion_matrix = np.zeros((len(self.classes), len(self.classes)), dtype=int)
         
+        for actual, predicted in zip(self.test_targets, predictions):
+           confusion_matrix[actual, predicted] += 1
+            
+        return confusion_matrix
+        
+    
 if __name__ == '__main__':
     
     #Test 1.1
@@ -189,6 +202,17 @@ if __name__ == '__main__':
     print("\n[+]Part 1.6")
     print(brute_best_split(features, targets, classes, 30))
     
+    #Test 2
+    print("\n[+]Part 2")
+    dt = IrisTreeTrainer(features, targets, classes=classes)
+    dt.train()  #part 2.1
+    
+    print(f'The accuracy is: {dt.accuracy()}')  #part 2.2
+    dt.plot()   #part 2.3
+    print(f'I guessed: {dt.guess()}') #part 2.4
+    print(f'The true targets are: {dt.test_targets}')   
+    
+    print(f'Confusion matrix: {dt.confusion_matrix()}') #part 2.5
     
     
     
