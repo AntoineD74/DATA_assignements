@@ -1,33 +1,18 @@
-# Author: 
-# Date:
-# Project: 
-# Acknowledgements: 
-#
-
-
 from tools import scatter_3d_data, bar_per_axis
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-def gen_data(
-    n: int,
-    k: int,
-    mean: np.ndarray,
-    var: float
-) -> np.ndarray:
+def gen_data(n: int, k: int, mean: np.ndarray, var: float) -> np.ndarray:
     '''Generate n values samples from the k-variate
     normal distribution
     '''
-    pass
+    cov = np.power(var, 2)*np.identity(k)
+    x_array = np.array(np.random.multivariate_normal(mean, cov, size=n)) 
+    return x_array
 
-
-def update_sequence_mean(
-    mu: np.ndarray,
-    x: np.ndarray,
-    n: int
-) -> np.ndarray:
+def update_sequence_mean(mu: np.ndarray, x: np.ndarray, n: int) -> np.ndarray:
     '''Performs the mean sequence estimation update
     '''
     pass
@@ -72,3 +57,9 @@ def gen_changing_data(
 def _plot_changing_sequence_estimate():
     # remove this if you don't go for the independent section
     pass
+
+if __name__ == '__main__':
+    
+    print("\n[+]Part 1.1")
+    print(gen_data(2, 3, np.array([0, 1, -1]), 1.3))
+    
