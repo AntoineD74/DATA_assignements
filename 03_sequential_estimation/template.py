@@ -15,7 +15,7 @@ def gen_data(n: int, k: int, mean: np.ndarray, var: float) -> np.ndarray:
 def update_sequence_mean(mu: np.ndarray, x: np.ndarray, n: int) -> np.ndarray:
     '''Performs the mean sequence estimation update
     '''
-    pass
+    return ((n * mu + x) / (n + 1))
 
 
 def _plot_sequence_estimate():
@@ -59,7 +59,46 @@ def _plot_changing_sequence_estimate():
     pass
 
 if __name__ == '__main__':
-    
+   
     print("\n[+]Part 1.1")
+    np.random.seed(1234)
     print(gen_data(2, 3, np.array([0, 1, -1]), 1.3))
+    np.random.seed(1234)
+    print(gen_data(5, 1, np.array([0.5]), 0.5))
+    
+    print("\n[+]Part 1.2: Plotting...")
+    np.random.seed(1234)
+    X = gen_data(300, 3, np.array([0, 1, -1]), 1.73)
+    scatter_3d_data(X)
+    bar_per_axis(X)
+    
+    print("\n[+]Part 1.4")
+    np.random.seed(1234)
+    mean = np.mean(X, 0)
+    new_x = gen_data(1, 3, np.array([0, 0, 0]), 1)
+    print(update_sequence_mean(mean, new_x, X.shape[0]))
+    
+    print("\n[+]Part 1.5")
+    np.random.seed(1234)
+    initial_estimates = np.array([0, 0, 0])
+    data = gen_data(100, 3, initial_estimates, 1)
+    
+    estimates = []
+    current_mean = initial_estimates
+    for i in range(data.shape[0]):
+        current_mean = update_sequence_mean(initial_estimates, data[i], i)
+        estimates.append(current_mean)
+        
+    estimates = np.array(estimates)
+    plt.figure(figsize=(12, 6))
+    for i in range(3):
+        plt.subplot(1, 3, 1)
+        plt.plot(range(100), estimates[:, i])
+        plt.xlabel('Data Point')
+        plt.ylabel(f'Dimension {i + 1} Estimate')
+        
+    plt.plot([e[0] for e in estimates], label='First dimension')    
+    plt.legend(loc='upper center')
+    plt.show()
+
     
