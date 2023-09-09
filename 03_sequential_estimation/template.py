@@ -34,29 +34,33 @@ def _plot_sequence_estimate():
 
 
 def _square_error(y, y_hat):
-    pass
+    return np.power((y-y_hat), 2)
 
 
 def _plot_mean_square_error():
-    pass
+    initial_estimates = np.array([0, 0, 0])
+    dataX = gen_data(100, 3, initial_estimates, 1)
+    
+    actual_mean = np.mean(dataX, axis=0)
+    
+    estimates = []
+    errors = []
+    current_mean = initial_estimates
+    for i in range(dataX.shape[0]):
+        current_mean = update_sequence_mean(current_mean, dataX[i], i)
+        estimates.append(current_mean)
+        
+        errors.append(np.mean(_square_error(current_mean, actual_mean)))
+    
+    errors = np.array(errors)
+    
+    #Plotting
+    plt.figure(figsize=(12, 6))
+    plt.plot(range(100), errors)
+    plt.xlabel('Data Point')
+    plt.ylabel('Average Squared Error')
+    plt.show()
 
-
-# Naive solution to the independent question.
-
-def gen_changing_data(
-    n: int,
-    k: int,
-    start_mean: np.ndarray,
-    end_mean: np.ndarray,
-    var: float
-) -> np.ndarray:
-    # remove this if you don't go for the independent section
-    pass
-
-
-def _plot_changing_sequence_estimate():
-    # remove this if you don't go for the independent section
-    pass
 
 if __name__ == '__main__':
    
@@ -72,13 +76,13 @@ if __name__ == '__main__':
     scatter_3d_data(X)
     bar_per_axis(X)
     
-    print("\n[+]Part 1.4")
+    print("\n[+]Part 1.4: Plotting...")
     np.random.seed(1234)
     mean = np.mean(X, 0)
     new_x = gen_data(1, 3, np.array([0, 0, 0]), 1)
     print(update_sequence_mean(mean, new_x, X.shape[0]))
     
-    print("\n[+]Part 1.5")
+    print("\n[+]Part 1.5: Plotting...")
     np.random.seed(1234)
     initial_estimates = np.array([0, 0, 0])
     data = gen_data(100, 3, initial_estimates, 1)
@@ -91,14 +95,12 @@ if __name__ == '__main__':
         
     estimates = np.array(estimates)
     plt.figure(figsize=(12, 6))
-    for i in range(3):
-        plt.subplot(1, 3, 1)
-        plt.plot(range(100), estimates[:, i])
-        plt.xlabel('Data Point')
-        plt.ylabel(f'Dimension {i + 1} Estimate')
-        
-    plt.plot([e[0] for e in estimates], label='First dimension')    
+    plt.plot([e[0] for e in estimates], label='First dimension')
+    plt.plot([e[1] for e in estimates], label='Second dimension')
+    plt.plot([e[2] for e in estimates], label='Third dimension')
     plt.legend(loc='upper center')
     plt.show()
-
     
+    print("\n[+]Part 1.6: Plotting...")
+    np.random.seed(1234)
+    _plot_mean_square_error()
