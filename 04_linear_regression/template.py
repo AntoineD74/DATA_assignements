@@ -1,13 +1,3 @@
-# Author: 
-# Date:
-# Project: 
-# Acknowledgements: 
-#
-
-# NOTE: Your code should NOT contain any main functions or code that is executed
-# automatically.  We ONLY want the functions as stated in the README.md.
-# Make sure to comment out or remove all unnecessary code before submitting.
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -15,11 +5,7 @@ from tools import load_regression_iris
 from scipy.stats import multivariate_normal
 
 
-def mvn_basis(
-    features: np.ndarray,
-    mu: np.ndarray,
-    sigma: float
-) -> np.ndarray:
+def mvn_basis(features: np.ndarray, mu: np.ndarray, sigma: float) -> np.ndarray:
     '''
     Multivariate Normal Basis Function
     The function transforms (possibly many) data vectors <features>
@@ -35,11 +21,25 @@ def mvn_basis(
     * fi - [NxM] is the basis function vectors containing a basis function
     output fi for each data vector x in features
     '''
-    pass
+    width_f, height_f = features.shape
+    width_mu, _ = mu.shape
+    fi = np.zeros((width_f, M))
+    covariance = sigma * np.eye(height_f)
+
+    for i in range(width_mu):
+        mvn = multivariate_normal(mean=mu[i], cov=covariance)
+        fi[:, i] = mvn.pdf(features)
+
+    return fi
 
 
-def _plot_mvn():
-    pass
+def _plot_mvn(features: np.ndarray, mu: np.ndarray, sigma: float) -> np.ndarray:
+    plt.figure(figsize=(12, 6))
+    fi = mvn_basis(features, mu, sigma)
+    M = fi.shape[1]
+    for j in range(M):
+        plt.plot(fi[:, j])
+    plt.show()
 
 
 def max_likelihood_linreg(
@@ -79,3 +79,21 @@ def linear_model(
     Output: [Nx1] The prediction for each data vector in features
     '''
     pass
+
+if __name__ == '__main__':
+    
+    print('[+]Part 1.1')
+    X, t = load_regression_iris()
+    N, D = X.shape
+    M, sigma = 10, 10
+    mu = np.zeros((M, D))
+    for i in range(D):
+        mmin = np.min(X[i, :])
+        mmax = np.max(X[i, :])
+        mu[:, i] = np.linspace(mmin, mmax, M)
+    
+    fi = mvn_basis(X, mu, sigma)
+    print(f'fi: {fi}')
+    
+    print('\n[+]Part 1.2')
+    _plot_mvn(X, mu, sigma)
