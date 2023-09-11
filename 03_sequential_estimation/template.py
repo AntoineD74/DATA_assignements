@@ -77,8 +77,8 @@ if __name__ == '__main__':
     bar_per_axis(X)
     
     print("\n[+]Part 1.4: Plotting...")
-    np.random.seed(1234)
     mean = np.mean(X, 0)
+    #np.random.seed(1234)
     new_x = gen_data(1, 3, np.array([0, 0, 0]), 1)
     print(update_sequence_mean(mean, new_x, X.shape[0]))
     

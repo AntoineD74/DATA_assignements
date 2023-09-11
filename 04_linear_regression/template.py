@@ -32,7 +32,6 @@ def mvn_basis(features: np.ndarray, mu: np.ndarray, sigma: float) -> np.ndarray:
 
     return fi
 
-
 def _plot_mvn(features: np.ndarray, mu: np.ndarray, sigma: float) -> np.ndarray:
     plt.figure(figsize=(12, 6))
     fi = mvn_basis(features, mu, sigma)
@@ -41,12 +40,7 @@ def _plot_mvn(features: np.ndarray, mu: np.ndarray, sigma: float) -> np.ndarray:
         plt.plot(fi[:, j])
     plt.show()
 
-
-def max_likelihood_linreg(
-    fi: np.ndarray,
-    targets: np.ndarray,
-    lamda: float
-) -> np.ndarray:
+def max_likelihood_linreg(fi: np.ndarray, targets: np.ndarray, lamda: float) -> np.ndarray:
     '''
     Estimate the maximum likelihood values for the linear model
 
@@ -57,15 +51,15 @@ def max_likelihood_linreg(
 
     Output: [Mx1], the maximum likelihood estimate of w for the linear model
     '''
-    pass
+    k = np.matmul(fi.T, fi) #fi*fi^T
+    dim_M = np.identity(fi.shape[1])
+    
+    k_lambda = np.linalg.inv(k + lamda * dim_M)
+    k_lambda_fi = np.dot(k_lambda, fi.T)
+    wml = np.dot(k_lambda_fi, targets)
+    return wml
 
-
-def linear_model(
-    features: np.ndarray,
-    mu: np.ndarray,
-    sigma: float,
-    w: np.ndarray
-) -> np.ndarray:
+def linear_model(features: np.ndarray, mu: np.ndarray, sigma: float, w: np.ndarray) -> np.ndarray:
     '''
     Inputs:
     * features: [NxD] is a data matrix with N D-dimensional data vectors.
@@ -78,7 +72,10 @@ def linear_model(
 
     Output: [Nx1] The prediction for each data vector in features
     '''
-    pass
+    basis_fi = np.array(mvn_basis(features, mu, sigma))
+    prediction = np.dot(basis_fi, w)
+    return prediction
+
 
 if __name__ == '__main__':
     
@@ -95,5 +92,15 @@ if __name__ == '__main__':
     fi = mvn_basis(X, mu, sigma)
     print(f'fi: {fi}')
     
-    print('\n[+]Part 1.2')
+    print('\n[+]Part 1.2: Plotting')
     _plot_mvn(X, mu, sigma)
+    
+    print('\n[+]Part 1.3')
+    fi = mvn_basis(X, mu, sigma) # same as before
+    lamda = 0.001
+    wml = max_likelihood_linreg(fi, t, lamda)
+    print(f'wml: {wml}')
+    
+    print('\n[+]Part 1.4')
+    prediction = linear_model(X, mu, sigma, wml)
+    print(f'prediction = {prediction}')

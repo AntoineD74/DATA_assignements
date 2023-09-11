@@ -1,4 +1,4 @@
-I don't expect the batch to be exactly (0, 1, -1), as this is an estimate the data will probably not give the exact mean.
-To make this estimate more accurate, we could increase the number of points to get more samples in our batch.
+I don't expect the batch to have the exact mean, as this is an estimate composed of a finite number of points the data will probably not give the exact mean.
+To make this estimate more accurate, we could increase the number of points to get more samples in our batch. This will make the batch's mean converge towards the actual mean.
 We could also decrease the deviation as this would result in less gap in-between our data samples.
 
