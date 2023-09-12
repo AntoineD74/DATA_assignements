@@ -76,6 +76,11 @@ def linear_model(features: np.ndarray, mu: np.ndarray, sigma: float, w: np.ndarr
     prediction = np.dot(basis_fi, w)
     return prediction
 
+def _square_error(y, y_hat):
+    return np.power((y-y_hat), 2)
+
+def update_mean(mu: np.ndarray, x: np.ndarray, n: int) -> np.ndarray:
+    return ((n * mu + x) / (n + 1))
 
 if __name__ == '__main__':
     
@@ -92,7 +97,7 @@ if __name__ == '__main__':
     fi = mvn_basis(X, mu, sigma)
     print(f'fi: {fi}')
     
-    print('\n[+]Part 1.2: Plotting')
+    print('\n[+]Part 1.2: Plotting...')
     _plot_mvn(X, mu, sigma)
     
     print('\n[+]Part 1.3')
@@ -104,3 +109,24 @@ if __name__ == '__main__':
     print('\n[+]Part 1.4')
     prediction = linear_model(X, mu, sigma, wml)
     print(f'prediction = {prediction}')
+    
+    print('\n[+]Part 1.5: Plotting...')
+    estimates = []
+    errors = []
+    current_mean = np.array([0, 0, 0])
+    actual_mean = np.mean(prediction, axis=0)
+    for i in range(prediction.shape[0]):
+        current_mean = update_mean(current_mean, prediction[i], i)
+        estimates.append(current_mean)
+        
+        errors.append(np.mean(_square_error(current_mean, actual_mean)))
+    
+    errors = np.array(errors)
+    
+    plt.figure(figsize=(12, 6))
+    plt.plot(errors)
+    plt.xlabel('Data Point')
+    plt.ylabel('Average Squared Error')
+    plt.show()
+
+

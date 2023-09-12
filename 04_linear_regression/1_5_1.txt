@@ -1,0 +1,3 @@
+By plotting the mean square error of our predictions, we can clearly see our predictions are not so accurate and they doesn't seem to get better in a first time. But if we take a closer look, we see the acurracy seems a bit random for the first 100 data points, and after these points the mean square error seems to decrease progressively and tend towards 0. 
+We can therefore assume that this tendency is the sign of an increasing accuracy and that this tendency would have continued to reach an even better accuracy in the eventuality we would have added more data points.
+
