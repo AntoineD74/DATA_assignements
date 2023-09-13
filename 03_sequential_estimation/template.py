@@ -15,7 +15,7 @@ def gen_data(n: int, k: int, mean: np.ndarray, var: float) -> np.ndarray:
 def update_sequence_mean(mu: np.ndarray, x: np.ndarray, n: int) -> np.ndarray:
     '''Performs the mean sequence estimation update
     '''
-    return ((n * mu + x) / (n + 1))
+    return (mu + (x-mu)/n)
 
 
 def _plot_sequence_estimate():
@@ -47,7 +47,7 @@ def _plot_mean_square_error():
     errors = []
     current_mean = initial_estimates
     for i in range(dataX.shape[0]):
-        current_mean = update_sequence_mean(current_mean, dataX[i], i)
+        current_mean = update_sequence_mean(current_mean, dataX[i], i+1)
         estimates.append(current_mean)
         
         errors.append(np.mean(_square_error(current_mean, actual_mean)))
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     mean = np.mean(X, 0)
     #np.random.seed(1234)
     new_x = gen_data(1, 3, np.array([0, 0, 0]), 1)
-    print(update_sequence_mean(mean, new_x, X.shape[0]))
+    print(update_sequence_mean(mean, new_x, X.shape[0]+1))
     
     print("\n[+]Part 1.5: Plotting...")
     np.random.seed(1234)
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     estimates = []
     current_mean = initial_estimates
     for i in range(data.shape[0]):
-        current_mean = update_sequence_mean(initial_estimates, data[i], i)
+        current_mean = update_sequence_mean(initial_estimates, data[i], i+1)
         estimates.append(current_mean)
         
     estimates = np.array(estimates)
