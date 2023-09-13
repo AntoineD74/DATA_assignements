@@ -22,8 +22,8 @@ def mvn_basis(features: np.ndarray, mu: np.ndarray, sigma: float) -> np.ndarray:
     output fi for each data vector x in features
     '''
     width_f, height_f = features.shape
-    width_mu, _ = mu.shape
-    fi = np.zeros((width_f, M))
+    width_mu = mu.shape[0]
+    fi = np.zeros((width_f, width_mu))
     covariance = sigma * np.eye(height_f)
 
     for i in range(width_mu):
@@ -35,8 +35,7 @@ def mvn_basis(features: np.ndarray, mu: np.ndarray, sigma: float) -> np.ndarray:
 def _plot_mvn(features: np.ndarray, mu: np.ndarray, sigma: float) -> np.ndarray:
     plt.figure(figsize=(12, 6))
     fi = mvn_basis(features, mu, sigma)
-    M = fi.shape[1]
-    for j in range(M):
+    for j in range(fi.shape[1]):
         plt.plot(fi[:, j])
     plt.show()
 
