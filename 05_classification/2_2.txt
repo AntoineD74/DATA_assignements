@@ -1,0 +1,29 @@
+Sample output:
+    Accuracy maximum_likelihood: 96.61016949152543%
+    Confusion matrix: 
+    [[21  0  0 ...  0  0  0]
+     [ 0 19  1 ...  0  0  0]
+     [ 0  1 17 ...  0  0  0]
+     ...
+     [ 0  0  0 ...  0  0  0]
+     [ 0  0  0 ...  0  0  0]
+     [ 0  0  0 ...  0  0  0]]
+         
+    for maximum_aposteriori:
+    
+    Accuracy maximum_aposteriori: 96.61016949152543%
+    Confusion matrix:
+    [[21  0  0 ...  0  0  0]
+     [ 0 19  1 ...  0  0  0]
+     [ 0  1 17 ...  0  0  0]
+     ...
+     [ 0  0  0 ...  0  0  0]
+     [ 0  0  0 ...  0  0  0]
+     [ 0  0  0 ...  0  0  0]]
+ 
+ 
+1. The accuracy for these 2 methods can vary given the samples are random. The accuracy vary between 94% and 100%.
+
+2.Both confusion matrix are identical.
+
+3. If the prior probabilities of classes are approximately equal to the class conditional property, the difference brought by the maximum aposteriori might be very small or even negligeable. Therefore, in our case, our aposteriori probabilities don't bring us any increase in our accuracy compared to the maximum likelihood method.

@@ -57,7 +57,6 @@ def maximum_likelihood(train_features: np.ndarray, train_targets: np.ndarray, te
     a [test_features.shape[0] x len(classes)] shaped numpy
     array
     '''
-
     means, covs = [], []
     for class_label in classes:
         means.append(mean_of_class(train_features, train_targets, class_label))
@@ -83,15 +82,10 @@ def predict(likelihoods: np.ndarray):
     You should return a [likelihoods.shape[0]] shaped numpy
     array of predictions, e.g. [0, 1, 0, ..., 1, 2]
     '''
-    ...
+    return np.argmax(likelihoods, axis=1)
 
 
-def maximum_aposteriori(
-    train_features: np.ndarray,
-    train_targets: np.ndarray,
-    test_features: np.ndarray,
-    classes: list
-) -> np.ndarray:
+def maximum_aposteriori(train_features: np.ndarray, train_targets: np.ndarray, test_features: np.ndarray, classes: list) -> np.ndarray:
     '''
     Calculate the maximum a posteriori for each test point in
     test_features by first estimating the mean and covariance
@@ -101,7 +95,32 @@ def maximum_aposteriori(
     a [test_features.shape[0] x len(classes)] shaped numpy
     array
     '''
-    ...
+    means, covs = [], []
+    prior_probabilities = [] 
+    for class_label in classes:
+        means.append(mean_of_class(train_features, train_targets, class_label))
+        covs.append(covar_of_class(train_features, train_targets, class_label))  
+        prior_probabilities.append(np.sum(train_targets == class_label) / len(train_targets))
+        
+    print(prior_probabilities)
+    likelihoods = np.zeros((test_features.shape[0], len(classes)))
+    for i in range(test_features.shape[0]):
+        feature = test_features[i, :]
+        
+        for j in range(len(classes)):
+            likelihood = multivariate_normal.pdf(feature, mean=means[j], cov=covs[j])
+            likelihoods[i, j] = likelihood * prior_probabilities[j] #aposteriori likelihood
+        
+    return likelihoods
+
+def confusion_matrix(prediction, actual_targets):
+    confusion_matrix = np.zeros((len(prediction), len(prediction)), dtype=int)
+    
+    for actual, predicted in zip(actual_targets, prediction):
+       confusion_matrix[actual, predicted] += 1
+        
+    return confusion_matrix
+
 
 if __name__ == '__main__':
     features, targets, classes = load_iris()
@@ -120,3 +139,21 @@ if __name__ == '__main__':
     
     print("\n[+]Part 1.4")
     print(maximum_likelihood(train_features, train_targets, test_features, classes))
+    
+    print("\n[+]Part 1.5")
+    likelihoods = maximum_likelihood(train_features, train_targets, test_features, classes)
+    prediction = predict(likelihoods)
+    print(prediction)
+    correct_predictions = np.sum(prediction == test_targets)
+    accuracy = 100*correct_predictions / len(prediction)
+    print(f'Accuracy maximum_likelihood: {accuracy}%')
+    print(confusion_matrix(prediction, test_targets))
+    
+    print("\n[+]Part 2.1")
+    likelihoods = maximum_aposteriori(train_features, train_targets, test_features, classes)
+    prediction = predict(likelihoods)
+    print(prediction)
+    correct_predictions = np.sum(prediction == test_targets)
+    accuracy = 100*correct_predictions / len(prediction)
+    print(f'Accuracy maximum_aposteriori: {accuracy}%')
+    print(confusion_matrix(prediction, test_targets))
