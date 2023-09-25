@@ -1,0 +1,13 @@
+
+
+For the Eigenvalues Plot: In this plot, we see a trend where the eigenvalues are decreasing.
+Eigenvalues represent the amount of variance explained by each principal componenent.
+The decreasing trend in eigenvalues indicates that the first few principal components capture the most significant variations in the data, while the following components capture less and less variation.
+
+For the log of Eigenvalues Plot: The log of the eigenvalues is plotted to emphasize the importance of each principal component in a more pronounced way.
+Similarly to the previous plot, the log eigenvalue plot shows a decreasing trend when we add new components.
+The logarithmic transformation amplifies the differences between eigenvalues, making it easier to distinguish the dominant components from the less important ones (introducing more or less variance).
+
+For the cumulative Eigenvalues Plot: The cumulative variance plot shows the cumulative variance increase as we include more components.
+The steepness of the curve initially is a reflection of how much information is captured by the firsts components. When this curve starts to level off, it indicates that adding more components does not significantly contribute to explaining additional variance.
+The point where the curve levels off can be interpreted as a point where we have captured a substantial portion of the variance in the data with the smallest amount of components possible.

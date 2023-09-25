@@ -122,6 +122,7 @@ def confusion_matrix(prediction, actual_targets):
     return confusion_matrix
 
 
+'''
 if __name__ == '__main__':
     features, targets, classes = load_iris()
     (train_features, train_targets), (test_features, test_targets) = split_train_test(features, targets, train_ratio=0.6)
@@ -157,3 +158,4 @@ if __name__ == '__main__':
     accuracy = 100*correct_predictions / len(prediction)
     print(f'Accuracy maximum_aposteriori: {accuracy}%')
     print(confusion_matrix(prediction, test_targets))
+'''

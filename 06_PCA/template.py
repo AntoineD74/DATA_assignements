@@ -64,24 +64,49 @@ def _scatter_cancer():
     
 
 def _plot_pca_components():
-    ...
-    X, y = load_cancer()
-    for i in range(...):
-        plt.subplot(5, 6, ...)
-        ...
+    X, _ = load_cancer()
+    X = standardize(X)
+    
+    pca = PCA(n_components=30)
+    pca.fit(X)
+    
+    plt.figure(figsize=(25, 20))
+    for i in range(30):
+        plt.subplot(5, 6, i+1)
+        plt.plot(X[:, i])
+        plt.title(f'PCA {i + 1}')
+        plt.xticks([])
+        plt.yticks([])
+    plt.tight_layout()
     plt.show()
 
 
 def _plot_eigen_values():
-    ...
-    plt.xlabel('Eigenvalue index')
-    plt.ylabel('Eigenvalue')
-    plt.grid()
-    plt.show()
+   X, _ = load_cancer()
+   X = standardize(X)
+   
+   pca = PCA(n_components=30)
+   pca.fit(X)
+   
+   eigenvalues = pca.explained_variance_
+   plt.plot(eigenvalues)
+   plt.xlabel('Eigenvalue index')
+   plt.ylabel('Eigenvalue')
+   plt.grid()
+   plt.show()
 
 
 def _plot_log_eigen_values():
-    ...
+    X, _ = load_cancer()
+    X = standardize(X)
+    
+    pca = PCA(n_components=30)
+    pca.fit(X)
+    
+    eigenvalues = pca.explained_variance_
+    log_eigenvalues = np.log10(eigenvalues)
+    
+    plt.plot(log_eigenvalues)
     plt.xlabel('Eigenvalue index')
     plt.ylabel('$\log_{10}$ Eigenvalue')
     plt.grid()
@@ -89,7 +114,16 @@ def _plot_log_eigen_values():
 
 
 def _plot_cum_variance():
-    ...
+    X, _ = load_cancer()
+    X = standardize(X)
+    
+    pca = PCA(n_components=30)
+    pca.fit(X)
+    
+    eigenvalues = pca.explained_variance_
+    cum_variance = np.cumsum(eigenvalues) / np.sum(eigenvalues)
+    
+    plt.plot(cum_variance)
     plt.xlabel('Eigenvalue index')
     plt.ylabel('Percentage variance')
     plt.grid()
@@ -111,6 +145,18 @@ if __name__ == '__main__':
     scatter_standardized_dims(X, 0, 2)
     plt.show()
     
-    print("\n[+]Part 1.3")
+    print("\n[+]Part 1.3: Plotting ...")
     _scatter_cancer()
     plt.show()
+    
+    print("\n[+]Part 2.1 Plotting ...")
+    _plot_pca_components()
+    
+    print("\n[+]Part 3.1: Plotting ...")
+    _plot_eigen_values()
+    
+    print("\n[+]Part 3.2: Plotting ...")
+    _plot_log_eigen_values()
+    
+    print("\n[+]Part 3.3: Plotting ...")
+    _plot_cum_variance()
