@@ -1,15 +1,3 @@
-# Author: 
-# Date:
-# Project: 
-# Acknowledgements: 
-#
-
-# NOTE: Your code should NOT contain any main functions or code that is executed
-# automatically.  We ONLY want the functions as stated in the README.md.
-# Make sure to comment out or remove all unnecessary code before submitting.
-
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
@@ -126,6 +114,7 @@ def _plot_cum_variance():
     plt.plot(cum_variance)
     plt.xlabel('Eigenvalue index')
     plt.ylabel('Percentage variance')
+    plt.xticks(np.arange(1, 30, step=5))
     plt.grid()
     plt.show()
 

@@ -1,0 +1,5 @@
+
+-> The dimensions that correlates the best with the first dimension are: The 1st, the 3rd, the 4th, 21th, 23th, and 24th dimensions.
+The names of these dimensions are: radius_mean, perimeter_mean, area_mean, radius_worst, perimeter_worst and area_worst.
+
+These dimensions correlate the best with the first dimension as they all are about the 2D dimensions of the features, which can explain a certain link between each of these relations and the first dimension. Therefore all of these dimensions essentially measure the same thing and can be reduced.

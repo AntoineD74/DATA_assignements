@@ -9,5 +9,5 @@ Similarly to the previous plot, the log eigenvalue plot shows a decreasing trend
 The logarithmic transformation amplifies the differences between eigenvalues, making it easier to distinguish the dominant components from the less important ones (introducing more or less variance).
 
 For the cumulative Eigenvalues Plot: The cumulative variance plot shows the cumulative variance increase as we include more components.
-The steepness of the curve initially is a reflection of how much information is captured by the firsts components. When this curve starts to level off, it indicates that adding more components does not significantly contribute to explaining additional variance.
+The angle of the curve initially is a reflection of how much information is captured by the firsts components. When this curve starts to level off, it indicates that adding more components does not significantly contribute to explaining additional variance.
 The point where the curve levels off can be interpreted as a point where we have captured a substantial portion of the variance in the data with the smallest amount of components possible.
