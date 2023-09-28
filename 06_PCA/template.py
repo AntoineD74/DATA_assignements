@@ -57,11 +57,12 @@ def _plot_pca_components():
     
     pca = PCA(n_components=30)
     pca.fit(X)
+    eigenvalues = pca.components_
     
     plt.figure(figsize=(25, 20))
     for i in range(30):
         plt.subplot(5, 6, i+1)
-        plt.plot(X[:, i])
+        plt.plot(eigenvalues[:, i])
         plt.title(f'PCA {i + 1}')
         plt.xticks([])
         plt.yticks([])
