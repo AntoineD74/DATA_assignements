@@ -1,15 +1,3 @@
-# Author: 
-# Date:
-# Project: 
-# Acknowledgements: 
-#
-
-# NOTE: Your code should NOT contain any main functions or code that is executed
-# automatically.  We ONLY want the functions as stated in the README.md.
-# Make sure to comment out or remove all unnecessary code before submitting.
-
-
-
 import numpy as np
 import sklearn as sk
 from sklearn.cluster import KMeans
@@ -21,10 +9,7 @@ from typing import Union
 from tools import load_iris, image_to_numpy, plot_gmm_results
 
 
-def distance_matrix(
-    X: np.ndarray,
-    Mu: np.ndarray
-) -> np.ndarray:
+def distance_matrix(X: np.ndarray, Mu: np.ndarray) -> np.ndarray:
     '''
     Returns a matrix of euclidian distances between points in
     X and Mu.
@@ -38,7 +23,14 @@ def distance_matrix(
     where out[i, j] is the euclidian distance between X[i, :]
     and Mu[j, :]
     '''
-    pass
+    n = X.shape[0]
+    k = Mu.shape[0]
+    distances = np.zeros((n, k))
+    for i in range(n):
+        for j in range(k):
+            distances[i, j] = np.linalg.norm(X[i] - Mu[j])
+
+    return distances
 
 
 def determine_r(dist: np.ndarray) -> np.ndarray:
@@ -53,7 +45,13 @@ def determine_r(dist: np.ndarray) -> np.ndarray:
     out (np.ndarray): A [n x k] array where out[i, j] is
     1 if sample i is closest to prototype j and 0 otherwise.
     '''
-    pass
+    n, k = dist.shape
+    r = np.zeros((n, k), dtype=int)
+    closest_prototypes = np.argmin(dist, axis=1)
+    for i in range(n):
+        r[i, closest_prototypes[i]] = 1
+
+    return r
 
 
 def determine_j(R: np.ndarray, dist: np.ndarray) -> float:
@@ -70,7 +68,14 @@ def determine_j(R: np.ndarray, dist: np.ndarray) -> float:
     Returns:
     * out (float): The value of the objective function
     '''
-    pass
+    n, k = R.shape
+    J = 0.0
+    for i in range(n):
+        for j in range(k):
+            J += R[i, j] * dist[i, j]
+    J /= n
+
+    return J
 
 
 def update_Mu(
@@ -169,3 +174,33 @@ def plot_image_clusters(n_clusters: int):
     # uncomment the following line to run
     # plt.imshow(kmeans.labels_.reshape(w, h), cmap="plasma")
     plt.show()
+
+if __name__ == '__main__':
+    
+    print("[+]Part 1.1")
+    a = np.array([
+        [1, 0, 0],
+        [4, 4, 4],
+        [2, 2, 2]])
+    b = np.array([
+        [0, 0, 0],
+        [4, 4, 4]])
+    print(distance_matrix(a, b))
+    
+    print("\n[+]Part 1.2")
+    dist = np.array([
+        [  1,   2,   3],
+        [0.3, 0.1, 0.2],
+        [  7,  18,   2],
+        [  2, 0.5,   7]])
+    print(determine_r(dist))
+    
+    print("\n[+]Part 1.3")
+    dist = np.array([
+        [  1,   2,   3],
+        [0.3, 0.1, 0.2],
+        [  7,  18,   2],
+        [  2, 0.5,   7]])
+    R = determine_r(dist)
+    print(determine_j(R, dist))
+    
