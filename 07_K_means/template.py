@@ -78,11 +78,7 @@ def determine_j(R: np.ndarray, dist: np.ndarray) -> float:
     return J
 
 
-def update_Mu(
-    Mu: np.ndarray,
-    X: np.ndarray,
-    R: np.ndarray
-) -> np.ndarray:
+def update_Mu(Mu: np.ndarray, X: np.ndarray, R: np.ndarray) -> np.ndarray:
     '''
     Updates the prototypes, given arrays of current
     prototypes, samples and indicators.
@@ -95,14 +91,17 @@ def update_Mu(
     Returns:
     out (np.ndarray): A [k x f] array of updated prototypes.
     '''
-    pass
+    k, d = Mu.shape
+    new_Mu = np.zeros((k, d))
+    for i in range(k):
+        numerator = np.sum(R[:, i].reshape(-1, 1) * X, axis=0)
+        denominator = np.sum(R[:, i])
+        new_Mu[i] = numerator / denominator
+
+    return new_Mu
 
 
-def k_means(
-    X: np.ndarray,
-    k: int,
-    num_its: int
-) -> Union[list, np.ndarray, np.ndarray]:
+def k_means(X: np.ndarray, k: int, num_its: int) -> Union[list, np.ndarray, np.ndarray]:
     # We first have to standardize the samples
     X_mean = X.mean(axis=0)
     X_std = X.std(axis=0)
@@ -113,21 +112,35 @@ def k_means(
     nn = sk.utils.shuffle(range(X_standard.shape[0]))
     Mu = X_standard[nn[0: k], :]
 
-    # !!! Your code here !!!
+    js = []
+    for iteration in range(num_its):
+        dist = distance_matrix(X_standard, Mu)
+        r = determine_r(dist)
+        J = determine_j(r, dist)
+        
+        js.append(J)
+        Mu = update_Mu(Mu, X_standard, r)
 
     # Then we have to "de-standardize" the prototypes
     for i in range(k):
         Mu[i, :] = Mu[i, :] * X_std + X_mean
 
-    # !!! Your code here !!!
+    return Mu, r, js
 
 
 def _plot_j():
-    pass
+    X, y, c = load_iris()
+    _, _, js = k_means(X, 4, 10)
+    plt.plot(js)
+    plt.show()
 
 
 def _plot_multi_j():
-    pass
+    k_values = [2, 3, 4, 5]
+    for i, k in enumerate(k_values):
+        _, _, js = k_means(X, k, num_its=10)
+        plt.plot(js)
+    plt.show()
 
 
 def k_means_predict(
@@ -203,4 +216,28 @@ if __name__ == '__main__':
         [  2, 0.5,   7]])
     R = determine_r(dist)
     print(determine_j(R, dist))
+    
+    print("\n[+]Part 1.4")
+    X = np.array([
+        [0, 1, 0],
+        [1, 0, 0],
+        [0, 0, 0]])
+    Mu = np.array([
+        [0.0, 0.5, 0.1],
+        [0.8, 0.2, 0.3]])
+    R = np.array([
+        [1, 0],
+        [0, 1],
+        [1, 0]])
+    print(update_Mu(Mu, X, R))
+    
+    print("\n[+]Part 1.5")
+    X, y, c = load_iris()
+    print(k_means(X, 4, 10))
+    
+    print("\n[+]Part 1.6: Plotting ...")
+    _plot_j()
+    
+    print("\n[+]Part 1.7: Plotting ...")
+    _plot_multi_j()
     
