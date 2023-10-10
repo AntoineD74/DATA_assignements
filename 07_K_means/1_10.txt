@@ -1,0 +1,7 @@
+
+Confusion matrix: 
+    [[50  0  0]
+     [ 0 41  9]
+     [ 0 16 34]]
+    
+Accuracy of the k-means: 0.833

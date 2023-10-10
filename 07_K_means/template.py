@@ -136,19 +136,19 @@ def _plot_j():
 
 
 def _plot_multi_j():
-    k_values = [2, 3, 4, 5]
+    k_values = [2, 3, 5, 10]
+    counter = 1
     for i, k in enumerate(k_values):
         _, _, js = k_means(X, k, num_its=10)
+        plt.subplot(2, 2, counter)
+        plt.title(f'k={k}')
         plt.plot(js)
+        counter+=1
+    plt.tight_layout()
     plt.show()
 
 
-def k_means_predict(
-    X: np.ndarray,
-    t: np.ndarray,
-    classes: list,
-    num_its: int
-) -> np.ndarray:
+def k_means_predict(X: np.ndarray, t: np.ndarray, classes: list, num_its: int) -> np.ndarray:
     '''
     Determine the accuracy and confusion matrix
     of predictions made by k_means on a dataset
@@ -164,29 +164,55 @@ def k_means_predict(
     Returns:
     * the predictions (list)
     '''
-    pass
+    Mu, r, _ = k_means(X, len(classes), num_its)
+    cluster_targets = np.argmax(r, axis=1)
+
+    cluster_class = {}
+    for class_label in classes:
+        number_cluster = np.bincount(cluster_targets[t == class_label])
+        most_common_cluster = np.argmax(number_cluster)
+        cluster_class[most_common_cluster] = class_label
+
+    k_predictions = []
+    for cluster in cluster_targets:
+        prediction = cluster_class.get(cluster, None)
+        if prediction is not None:
+            k_predictions.append(prediction)
+        
+    return np.array(k_predictions)
+
 
 
 def _iris_kmeans_accuracy():
-    pass
+    X, y, _ = load_iris()
+    class_predictions = k_means_predict(X, y, np.unique(y), 5)
+    accuracy = accuracy_score(y, class_predictions)
+    confusion = confusion_matrix(y, class_predictions)
+    return accuracy, confusion
 
 
 def _my_kmeans_on_image():
-    pass
+    image, (w, h) = image_to_numpy()
+    print(k_means(image, 7, 5))
+
 
 
 def plot_image_clusters(n_clusters: int):
     '''
     Plot the clusters found using sklearn k-means.
     '''
-    image, (w, h) = image_to_numpy()
-    ...
-    plt.subplot('121')
-    plt.imshow(image.reshape(w, h, 3))
-    plt.subplot('122')
-    # uncomment the following line to run
-    # plt.imshow(kmeans.labels_.reshape(w, h), cmap="plasma")
-    plt.show()
+    # Load the image and convert it to a compatible numpy array
+    image, _ = image_to_numpy()
+
+    kmeans = KMeans(n_clusters=n_clusters, random_state=0, n_init=5, max_iter=100)
+    cluster_labels = kmeans.fit_predict(image)
+
+    print(cluster_labels)
+
+    gmm = GaussianMixture(n_components=n_clusters)
+    gmm.fit(image)
+    plot_gmm_results(image, cluster_labels, gmm.means_, gmm.covariances_)
+    
 
 if __name__ == '__main__':
     
@@ -240,4 +266,21 @@ if __name__ == '__main__':
     
     print("\n[+]Part 1.7: Plotting ...")
     _plot_multi_j()
+    
+    print("\n[+]Part 1.9")
+    X, y, c = load_iris()
+    print(k_means_predict(X, y, c, 5))
+    
+    print("\n[+]Part 1.10")
+    accuracy, confusion = _iris_kmeans_accuracy()
+    print(accuracy)
+    print(confusion)
+      
+    print("\n[+]Part 2.1")
+    #print(_my_kmeans_on_image())
+    
+    print("\n[+]Part 2.1.1")
+    num_clusters = [2, 5, 10, 20]
+    for num in num_clusters:
+        plot_image_clusters(num)
     

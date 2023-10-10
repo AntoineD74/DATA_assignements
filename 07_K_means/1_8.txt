@@ -1,0 +1,6 @@
+
+From the previous part, we can assume the best value for K would be K = 3 as it is the value for which the objective function reach a low value and stabilize the quickest.
+
+If we have n samples and we set k=n, each points would be treated as its own cluster and the k-means algorithm would then overfit the data.
+
+It is therefore not a good idea to take k=n as it would cause our algorithm to not be able to gather data points into cluster and thus not give us any meaningful insight about our data.
