@@ -1,0 +1,4 @@
+
+
+In the get_better_titanic function I modify the get_titanic function provided by replacing the 'Age' column of our data frame in order to make use of the data inside instead of dropping this column.
+I achieved this by calculating the mean of age of all passengers and replacing all NaN by the mean.
