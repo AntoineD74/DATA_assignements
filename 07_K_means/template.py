@@ -201,17 +201,15 @@ def plot_image_clusters(n_clusters: int):
     '''
     Plot the clusters found using sklearn k-means.
     '''
-    # Load the image and convert it to a compatible numpy array
-    image, _ = image_to_numpy()
+    image, (w, h) = image_to_numpy()
+    kmeans = KMeans(n_clusters=n_clusters, random_state=0, n_init=5, max_iter=100).fit(image)
 
-    kmeans = KMeans(n_clusters=n_clusters, random_state=0, n_init=5, max_iter=100)
-    cluster_labels = kmeans.fit_predict(image)
-
-    print(cluster_labels)
-
-    gmm = GaussianMixture(n_components=n_clusters)
-    gmm.fit(image)
-    plot_gmm_results(image, cluster_labels, gmm.means_, gmm.covariances_)
+    plt.subplot(121)
+    plt.imshow(image.reshape(w, h, 3))
+    plt.subplot(122)
+    
+    plt.imshow(kmeans.labels_.reshape(w, h), cmap="plasma")
+    plt.show()
     
 
 if __name__ == '__main__':
@@ -281,6 +279,6 @@ if __name__ == '__main__':
     
     print("\n[+]Part 2.1.1")
     num_clusters = [2, 5, 10, 20]
-    for num in num_clusters:
-        plot_image_clusters(num)
+    for cluster in num_clusters:
+        plot_image_clusters(cluster)
     
