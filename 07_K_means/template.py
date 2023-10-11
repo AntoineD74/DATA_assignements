@@ -176,11 +176,11 @@ def k_means_predict(X: np.ndarray, t: np.ndarray, classes: list, num_its: int) -
     k_predictions = []
     for cluster in cluster_targets:
         prediction = cluster_class.get(cluster, None)
-        if prediction is not None:
-            k_predictions.append(prediction)
-        
-    return np.array(k_predictions)
+        if prediction is None:
+            prediction = 0
+        k_predictions.append(prediction)
 
+    return np.array(k_predictions, dtype=float)
 
 
 def _iris_kmeans_accuracy():
@@ -268,7 +268,7 @@ if __name__ == '__main__':
     print("\n[+]Part 1.9")
     X, y, c = load_iris()
     print(k_means_predict(X, y, c, 5))
-    
+    """
     print("\n[+]Part 1.10")
     accuracy, confusion = _iris_kmeans_accuracy()
     print(accuracy)
@@ -281,4 +281,4 @@ if __name__ == '__main__':
     num_clusters = [2, 5, 10, 20]
     for cluster in num_clusters:
         plot_image_clusters(cluster)
-    
+"""
