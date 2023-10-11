@@ -1,0 +1,7 @@
+
+Parameters: n_estimators=200, random_state = 70, 
+
+Results obtained:
+    Accuracy: 0.8395522388059702
+    Precision: 0.8488372093023255
+    Recall: 0.7087378640776699
