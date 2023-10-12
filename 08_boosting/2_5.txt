@@ -1,2 +1,2 @@
 
-Best parameters found found with param_search function: {'n_estimators': 23, 'max_depth': 3, 'learning_rate': 0.2}
+Best parameters found found with param_search function: {'n_estimators': 23, 'max_depth': 5, 'learning_rate': 0.2}

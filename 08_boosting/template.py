@@ -44,7 +44,7 @@ def get_better_titanic():
 
     X_full["Age"].fillna(X_full["Age"].mean(), inplace=True)
     X_full.drop(
-        ['PassengerId', 'Cabin', 'Age', 'Name', 'Ticket'],
+        ['PassengerId', 'Cabin', 'Name', 'Ticket'],
         inplace=True, axis=1)
 
     fare_mean = X_full[X_full.Pclass == 3].Fare.mean()
@@ -133,7 +133,7 @@ def gb_optimized_train_test(X_train, t_train, X_test, t_test):
     and evaluate it on (X_test, t_test) with
     your own optimized parameters
     '''
-    gb = GradientBoostingClassifier(n_estimators=23, max_depth=3, learning_rate=0.2, random_state=42)
+    gb = GradientBoostingClassifier(n_estimators=23, max_depth=5, learning_rate=0.2, random_state=42)
     gb.fit(X_train, t_train)
 
     predictions = gb.predict(X_test)
@@ -152,10 +152,11 @@ def _create_submission():
     prediction = None  # !!! Your prediction here !!!
     build_kaggle_submission(prediction)
 
-
+"""
 if __name__ == '__main__':
-    print("[+]Part 1.1")
     (tr_X, tr_y), (tst_X, tst_y), submission_X = get_better_titanic()
+    
+    print("[+]Part 1.1")
     print(tr_X[:1])
 
     print("\n[+]Part 2.1")
@@ -172,6 +173,7 @@ if __name__ == '__main__':
 
     print("\n[+]Part 2.5")
     print(param_search(tr_X, tr_y))
-
+    
     print("\n[+]Part 2.6")
     print(gb_optimized_train_test(tr_X, tr_y, tst_X, tst_y))
+"""

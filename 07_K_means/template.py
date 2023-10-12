@@ -211,7 +211,7 @@ def plot_image_clusters(n_clusters: int):
     plt.imshow(kmeans.labels_.reshape(w, h), cmap="plasma")
     plt.show()
     
-
+"""
 if __name__ == '__main__':
     
     print("[+]Part 1.1")
@@ -268,7 +268,7 @@ if __name__ == '__main__':
     print("\n[+]Part 1.9")
     X, y, c = load_iris()
     print(k_means_predict(X, y, c, 5))
-    """
+    
     print("\n[+]Part 1.10")
     accuracy, confusion = _iris_kmeans_accuracy()
     print(accuracy)

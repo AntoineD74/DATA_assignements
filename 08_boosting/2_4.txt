@@ -1,7 +1,7 @@
 
 Results obtained:
-    Accuracy: 0.8395522388059702
-    Precision: 0.8947368421052632
-    Recall: 0.6601941747572816
+	Accuracy: 0.8208955223880597
+	Precision: 0.8313253012048193
+	Recall: 0.6699029126213593
 
-If we try using a Gradient Boost classifier with same parameters we get results slightly worse than the Random Forest classifier.
+If we try using a Gradient Boost classifier with 'random_state=42' for only paramter we get results slightly worse than the Random Forest classifier with a lower accuracy and precision.
