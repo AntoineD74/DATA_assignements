@@ -8,10 +8,8 @@ def sigmoid(x: float) -> float:
     '''
     Calculate the sigmoid of x
     '''
-    if x < -100:
-        return 0.0
-    else:
-        return (1 / (1 + np.exp(-x)))
+    x = np.clip(x, -100, None)  # Will return 0.0 in case of overflow
+    return (1 / (1 + np.exp(-x)))
 
 
 def d_sigmoid(x: float) -> float:
@@ -63,14 +61,14 @@ def backprop(x: np.ndarray, target_y: np.ndarray, M: int, K: int, W1: np.ndarray
     for the given input pair x, target_y
     '''
     y, z0, z1, a1, a2 = ffnn(x, M, K, W1, W2)
-    
-    delta2 = y - target_y
-    delta1 = np.dot(W2[1:, :], delta2) * a1 * (1 - a1)
+
+    deltak = y - target_y
+    deltaj= np.dot(W2[1:, :], deltak) * d_sigmoid(a1)
     
     dE1 = np.zeros_like(W1)
     dE2 = np.zeros_like(W2)
-    dE1 += np.dot(delta1, z0).T  # Transpose the outer product
-    dE2 += np.dot(delta2, z1).T   # Transpose the outer product
+    dE1 += np.outer(z0, deltaj)
+    dE2 += np.outer(z1, deltak)
 
     return y, dE1, dE2
 
@@ -150,6 +148,7 @@ if __name__ == "__main__":
     K = 3  # number of classes
     M = 6
     D = train_features.shape[1]
+    
     x = features[0, :]
     
     # create one-hot target for the feature
