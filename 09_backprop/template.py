@@ -2,7 +2,7 @@ from typing import Union
 import numpy as np
 
 from tools import load_iris, split_train_test
-
+from sklearn.metrics import confusion_matrix
 
 def sigmoid(x: float) -> float:
     '''
@@ -73,16 +73,7 @@ def backprop(x: np.ndarray, target_y: np.ndarray, M: int, K: int, W1: np.ndarray
     return y, dE1, dE2
 
 
-def train_nn(
-    X_train: np.ndarray,
-    t_train: np.ndarray,
-    M: int,
-    K: int,
-    W1: np.ndarray,
-    W2: np.ndarray,
-    iterations: int,
-    eta: float
-) -> Union[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+def train_nn(X_train: np.ndarray, t_train: np.ndarray, M: int, K: int, W1: np.ndarray, W2: np.ndarray, iterations: int, eta: float) -> Union[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     '''
     Train a network by:
     1. forward propagating an input feature through the network
@@ -91,21 +82,59 @@ def train_nn(
     3. Backpropagating the error through the network to adjust
     the weights.
     '''
-    ...
+    E_total = []
+    misclassification_rate = []
+    N = X_train.shape[0]
+    last_guesses = []
+
+    for _ in range(iterations):
+        dE1_total = np.zeros_like(W1)
+        dE2_total = np.zeros_like(W2)
+        total_error = 0
+        misclassifications = 0
+
+        for i in range(N):
+            x = X_train[i, :]
+            target_y = np.zeros(K)
+
+            y, dE1, dE2 = backprop(x, target_y, M, K, W1, W2)
+            dE1_total += dE1
+            dE2_total += dE2
+            total_error += -np.sum(target_y * np.log(y) + (1 - target_y) * np.log(1 - y))
+
+            predicted_class = np.argmax(y)
+            
+            if predicted_class != t_train[i]:
+                misclassifications += 1
+
+        W1 -= eta * dE1_total / N
+        W2 -= eta * dE2_total / N
+
+        misclassification_rate.append(misclassifications / N)
+        E_total.append(total_error)
 
 
-def test_nn(
-    X: np.ndarray,
-    M: int,
-    K: int,
-    W1: np.ndarray,
-    W2: np.ndarray
-) -> np.ndarray:
+    for j in range(N):
+        y, z0, z1, a1, a2 = ffnn(X_train[j, :], M, K, W1, W2)
+        last_guesses.append(np.argmax(y))
+
+    return W1, W2, E_total, misclassification_rate, np.array(last_guesses, dtype=float)
+
+
+def test_nn(X: np.ndarray,M: int, K: int, W1: np.ndarray, W2: np.ndarray) -> np.ndarray:
     '''
     Return the predictions made by a network for all features
     in the test set X.
     '''
-    ...
+    N = X.shape[0]
+    guesses = np.zeros(N, dtype=int)
+    
+    for i in range(N):
+      y, _, _ = ffnn(X[i, :], M, K, W1, W2)
+      guess = np.argmax(y)
+      guesses[i] = guess
+   
+    return guesses
 
 
 if __name__ == "__main__":
@@ -163,3 +192,35 @@ if __name__ == "__main__":
     print(y)
     print(dE1)
     print(dE2)
+    
+    print("\n[+] Part 2.1")
+    np.random.seed(1234)
+    K = 3  # number of classes
+    M = 6
+    D = train_features.shape[1]
+    
+    # Initialize two random weight matrices
+    W1 = 2 * np.random.rand(D + 1, M) - 1
+    W2 = 2 * np.random.rand(M + 1, K) - 1
+    W1tr, W2tr, Etotal, misclassification_rate, last_guesses = train_nn(train_features[:20, :], train_targets[:20], M, K, W1, W2, 500, 0.1)
+    print(W1tr)
+    print(W2tr)
+    print(Etotal)
+    print(misclassification_rate)
+    print(last_guesses)
+    
+    print("\n[+] Part 2.3")
+    (train_features, train_targets), (test_features, test_targets) = split_train_test(features, targets)
+    W1 = 2 * np.random.rand(D + 1, M) - 1
+    W2 = 2 * np.random.rand(M + 1, K) - 1
+    W1tr, W2tr, Etotal, misclassification_rate, last_guesses = train_nn(train_features, train_targets, M, K, W1, W2, 500, 0.1)
+    
+    predictions = []
+    for i in range(test_features.shape[0]):
+        y, _, _, _, _ = ffnn(test_features[i, :], M, K, W1tr, W2tr)
+        predictions.append(np.argmax(y))
+    
+    confusion_matrix_result = confusion_matrix(test_targets, np.array(predictions))
+    
+    print("Confusion Matrix:")
+    print(confusion_matrix_result)

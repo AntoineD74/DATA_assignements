@@ -111,6 +111,7 @@ def train_simple_model():
             # for sample i.
             out = model(feature)
             # Calculate the loss for the current batch
+            target = target.long()
             loss = loss_metric(out, target)
             # To perform the backward propagation we do:
             loss.backward()
@@ -122,6 +123,7 @@ def train_simple_model():
     plt.plot(loss_values)
     plt.title('Loss as a function of training steps')
     plt.show()
+    
 
 
 if __name__ == '__main__':
