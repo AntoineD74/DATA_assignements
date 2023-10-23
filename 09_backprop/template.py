@@ -3,6 +3,7 @@ import numpy as np
 
 from tools import load_iris, split_train_test
 from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
 
 def sigmoid(x: float) -> float:
     '''
@@ -210,17 +211,31 @@ if __name__ == "__main__":
     print(last_guesses)
     
     print("\n[+] Part 2.3")
-    (train_features, train_targets), (test_features, test_targets) = split_train_test(features, targets)
     W1 = 2 * np.random.rand(D + 1, M) - 1
     W2 = 2 * np.random.rand(M + 1, K) - 1
-    W1tr, W2tr, Etotal, misclassification_rate, last_guesses = train_nn(train_features, train_targets, M, K, W1, W2, 500, 0.1)
+    W1tr, W2tr, Etotal, misclassification_rate, last_guesses = train_nn(train_features[:, :], train_targets[:], M, K, W1, W2, 500, 0.1)  #training on 80% of the dataset
     
     predictions = []
-    for i in range(test_features.shape[0]):
+    for i in range(test_features.shape[0]): #Predictions for the test data
         y, _, _, _, _ = ffnn(test_features[i, :], M, K, W1tr, W2tr)
         predictions.append(np.argmax(y))
+    #print(misclassification_rate)
+    print(Etotal)
+    print(np.array(predictions))
+    print(test_targets)
+    confusion = confusion_matrix(test_targets, np.array(predictions))
     
-    confusion_matrix_result = confusion_matrix(test_targets, np.array(predictions))
+    print(f"\nAccuracy: {np.count_nonzero(last_guesses == train_targets) / len(train_targets) * 100:.2f}%")
     
-    print("Confusion Matrix:")
-    print(confusion_matrix_result)
+    print("\nConfusion Matrix:")
+    print(confusion)
+    
+    plt.plot(Etotal)
+    plt.xlabel("Epochs")
+    plt.ylabel("Error")
+    plt.show()
+    
+    plt.plot(misclassification_rate)
+    plt.xlabel("Epochs")
+    plt.ylabel("Misclassification rate")
+    plt.show()
