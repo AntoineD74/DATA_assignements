@@ -87,7 +87,6 @@ def train_nn(X_train: np.ndarray, t_train: np.ndarray, M: int, K: int, W1: np.nd
     misclassification_rate = []
     N = X_train.shape[0]
     last_guesses = []
-
     for _ in range(iterations):
         dE1_total = np.zeros_like(W1)
         dE2_total = np.zeros_like(W2)
@@ -97,11 +96,12 @@ def train_nn(X_train: np.ndarray, t_train: np.ndarray, M: int, K: int, W1: np.nd
         for i in range(N):
             x = X_train[i, :]
             target_y = np.zeros(K)
-
+            target_y[t_train[i]] = 1.0
+            
             y, dE1, dE2 = backprop(x, target_y, M, K, W1, W2)
             dE1_total += dE1
             dE2_total += dE2
-            total_error += -np.sum(target_y * np.log(y) + (1 - target_y) * np.log(1 - y))
+            total_error -= np.sum(target_y * np.log(y) + (1 - target_y) * np.log(1 - y))
 
             predicted_class = np.argmax(y)
             
@@ -112,8 +112,7 @@ def train_nn(X_train: np.ndarray, t_train: np.ndarray, M: int, K: int, W1: np.nd
         W2 -= eta * dE2_total / N
 
         misclassification_rate.append(misclassifications / N)
-        E_total.append(total_error)
-
+        E_total.append(total_error / N)
 
     for j in range(N):
         y, z0, z1, a1, a2 = ffnn(X_train[j, :], M, K, W1, W2)
@@ -131,7 +130,7 @@ def test_nn(X: np.ndarray,M: int, K: int, W1: np.ndarray, W2: np.ndarray) -> np.
     guesses = np.zeros(N, dtype=int)
     
     for i in range(N):
-      y, _, _ = ffnn(X[i, :], M, K, W1, W2)
+      y, _, _, _, _ = ffnn(X[i, :], M, K, W1, W2)
       guess = np.argmax(y)
       guesses[i] = guess
    
@@ -215,13 +214,11 @@ if __name__ == "__main__":
     W2 = 2 * np.random.rand(M + 1, K) - 1
     W1tr, W2tr, Etotal, misclassification_rate, last_guesses = train_nn(train_features[:, :], train_targets[:], M, K, W1, W2, 500, 0.1)  #training on 80% of the dataset
     
-    predictions = []
-    for i in range(test_features.shape[0]): #Predictions for the test data
-        y, _, _, _, _ = ffnn(test_features[i, :], M, K, W1tr, W2tr)
-        predictions.append(np.argmax(y))
+    predictions = test_nn(test_features, M, K, W1tr, W2tr)
+    
     #print(misclassification_rate)
-    print(Etotal)
-    print(np.array(predictions))
+    #print(Etotal)
+    print(predictions)
     print(test_targets)
     confusion = confusion_matrix(test_targets, np.array(predictions))
     
@@ -239,3 +236,4 @@ if __name__ == "__main__":
     plt.xlabel("Epochs")
     plt.ylabel("Misclassification rate")
     plt.show()
+    
