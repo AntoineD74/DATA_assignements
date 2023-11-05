@@ -30,21 +30,34 @@ def masked_attention(Q, K, V, mask):
     return (attention_weights @ V)
 
 
-def linear_projection(x, w, b):
-    pass
+def linear_projection(x, w, b):    
+    return ((x @ w) + b)
 
 
 def multi_head_attention(x, attn, number_of_heads):
     w_1, b_1 = attn["c_attn"]["w"], attn["c_attn"]["b"]
     w_2, b_2 = attn["c_proj"]["w"], attn["c_proj"]["b"]
     mask = (1 - np.tri(x.shape[0], dtype=x.dtype)) * -1e10
-    """
-        Your code here
-    """
+
+    head_dim = w_1.shape[1] // 3
+
+    Q_proj = linear_projection(x, w_1[:, :head_dim], b_1)
+    K_proj = linear_projection(x, w_1[:, head_dim:2*head_dim], b_1)
+    V_proj = linear_projection(x, w_1[:, 2*head_dim:], b_1)
+    
+    Q_proj = np.array_split(Q_proj, number_of_heads, axis=1)
+    K_proj = np.array_split(K_proj, number_of_heads, axis=1)
+    V_proj = np.array_split(V_proj, number_of_heads, axis=1)
+    
+    attended_heads_list = []
+    for i in range(number_of_heads):
+        attended_head = masked_attention(Q_proj[i], K_proj[i], V_proj[i], mask)
+        attended_heads_list.append(attended_head)
+    
+    attended_values = np.concatenate(attended_heads_list, axis=1)
+    x = linear_projection(attended_values, w_2, b_2)
+    
     return x
-
-
-# Transformer blocks and GPT2
 
 
 def gelu(x):
@@ -154,3 +167,23 @@ if __name__ == "__main__":
     mask = (1 - np.tri(nf)) * -1e10
     x = masked_attention(q, k, v, mask)
     print(x)
+    
+    print("\n[+]Part 2.1")
+    np.random.seed(4321)
+    x = np.random.rand(3,2)
+    w = np.random.rand(2,3)
+    b = np.random.rand(3,1)
+    lp = linear_projection(x, w, b)
+    print(lp)
+    
+    print("\n[+]Part 2.2")
+    np.random.seed(4321)
+    x = np.random.rand(3,4)
+    w_1 = np.random.rand(4,12)
+    b_1 = np.random.rand(3,1)
+    w_2 = np.random.rand(4,3)
+    b_2 = np.random.rand(3,1)
+    attn = {"c_attn": {"w": w_1, "b": b_1}, "c_proj": {"w": w_2, "b": b_2}}
+    x = multi_head_attention(x, attn, 2)
+    print(x)
+
