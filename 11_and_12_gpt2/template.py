@@ -8,15 +8,26 @@ from tools import get_params
 # Multi-head attention
 
 def softmax(x):
-    pass
+    numerator = np.exp(x - np.max(x, axis=1, keepdims=True))
+    denominator = np.sum(numerator, axis=1, keepdims=True)
+    softmax_values = numerator / denominator
+    
+    return softmax_values
 
 
 def attention(Q, K, V):
-    pass
+    product = (Q @ K.T) / np.sqrt(Q.shape[1])
+    attention_weights = softmax(product)
+
+    return (attention_weights @ V)
 
 
 def masked_attention(Q, K, V, mask):
-    pass
+    product = (Q @ K.T) / np.sqrt(Q.shape[1])
+    masked_product = product + mask
+    attention_weights = softmax(masked_product)
+    
+    return (attention_weights @ V)
 
 
 def linear_projection(x, w, b):
@@ -122,4 +133,24 @@ if __name__ == "__main__":
     You can try out different sized models from this list: ["124M", "355M", "774M", "1558M"]
     Make sure you have enough space on your device since the bigger models are quite large.
     """
-    pass
+    
+    print("[+]Part 1.1")
+    print(softmax(np.array([[-1., 0.], [0.2, 1.]])))
+    
+    print("\n[+]Part 1.2")
+    np.random.seed(4321)
+    q = np.random.rand(3,2)
+    k = np.random.rand(3,2)
+    v = np.random.rand(3,2)
+    x = attention(q, k, v)
+    print(x)
+    
+    print("\n[+]Part 1.3")
+    np.random.seed(4321)
+    nf = 10
+    q = np.random.rand(nf,2)
+    k = np.random.rand(nf,2)
+    v = np.random.rand(nf,2)
+    mask = (1 - np.tri(nf)) * -1e10
+    x = masked_attention(q, k, v, mask)
+    print(x)
