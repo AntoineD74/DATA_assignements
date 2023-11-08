@@ -61,19 +61,25 @@ def multi_head_attention(x, attn, number_of_heads):
 
 
 def gelu(x):
-    pass
+    cdf = 0.5 * (1.0 + np.tanh((np.sqrt(2 / np.pi) * (x + 0.044715 * np.power(x, 3)))))
+    return (x * cdf)
 
 
 def layer_normalization(x, g, b, eps=1e-5):
-    pass
+    mean = np.mean(x, axis=1, keepdims=True)
+    var = np.var(x, axis=1, keepdims=True)
+    normalized_x = (x - mean) / np.sqrt(var + eps)
+    return (g * normalized_x + b)
 
 
 def feed_forward_network(x, mlp):
     w_1, b_1 = mlp["c_fc"]["w"], mlp["c_fc"]["b"]
     w_2, b_2 = mlp["c_proj"]["w"], mlp["c_proj"]["b"]
-    """
-        Your code here
-    """
+
+    projection_1 = linear_projection(x, w_1, b_1)
+    activation_output = gelu(projection_1)
+    
+    x = linear_projection(activation_output, w_2, b_2)
     return x
 
 
@@ -84,6 +90,12 @@ def transformer_block(x, block, number_of_heads):
     """
         Your code here
     """
+    layer_nomr1 = layer_normalization(x, g_1, b_1)
+    foward_pass1 = multi_head_attention(layer_nomr1, attn, number_of_heads) + x
+    
+    layer_nomr2 = layer_normalization(foward_pass1, g_2, b_2)
+    x = multi_head_attention(layer_nomr2, attn, number_of_heads) + x
+
     return x
 
 
@@ -185,5 +197,30 @@ if __name__ == "__main__":
     b_2 = np.random.rand(3,1)
     attn = {"c_attn": {"w": w_1, "b": b_1}, "c_proj": {"w": w_2, "b": b_2}}
     x = multi_head_attention(x, attn, 2)
+    print(x)
+    
+    print("\n==================== Part 2 =======================")
+    
+    
+    print("\n[+]Part 1.1")
+    print(gelu(np.array([[-1., 0.], [0.2,  1.]])))
+    
+    print("\n[+]Part 1.2")
+    np.random.seed(4321)
+    x = np.random.rand(3,2)
+    g = np.random.rand(3,2)
+    b = np.random.rand(3,1)
+    ln = layer_normalization(x, g, b)
+    print(ln)
+    
+    print("\n[+]Part 2.1")
+    np.random.seed(4321)
+    x = np.random.rand(3,4)
+    w_1 = np.random.rand(4,5)
+    b_1 = np.random.rand(3,1)
+    w_2 = np.random.rand(5,4)
+    b_2 = np.random.rand(3,1)
+    mlp = {"c_fc": {"w": w_1, "b": b_1}, "c_proj": {"w": w_2, "b": b_2}}
+    x = feed_forward_network(x, mlp)
     print(x)
 
