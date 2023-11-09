@@ -41,13 +41,12 @@ def multi_head_attention(x, attn, number_of_heads):
 
     head_dim = w_1.shape[1] // 3
 
-    Q_proj = linear_projection(x, w_1[:, :head_dim], b_1)
-    K_proj = linear_projection(x, w_1[:, head_dim:2*head_dim], b_1)
-    V_proj = linear_projection(x, w_1[:, 2*head_dim:], b_1)
-    
-    Q_proj = np.array_split(Q_proj, number_of_heads, axis=1)
-    K_proj = np.array_split(K_proj, number_of_heads, axis=1)
-    V_proj = np.array_split(V_proj, number_of_heads, axis=1)
+    projected_x = linear_projection(x, w_1, b_1)
+    Q_proj, K_proj, V_proj = np.split(projected_x, 3, axis=1)
+
+    Q_proj = np.split(Q_proj, number_of_heads, axis=1)
+    K_proj = np.split(K_proj, number_of_heads, axis=1)
+    V_proj = np.split(V_proj, number_of_heads, axis=1)
     
     attended_heads_list = []
     for i in range(number_of_heads):
@@ -76,36 +75,45 @@ def feed_forward_network(x, mlp):
     w_1, b_1 = mlp["c_fc"]["w"], mlp["c_fc"]["b"]
     w_2, b_2 = mlp["c_proj"]["w"], mlp["c_proj"]["b"]
 
-    projection_1 = linear_projection(x, w_1, b_1)
-    activation_output = gelu(projection_1)
+    projected_x = linear_projection(x, w_1, b_1)
+
+    g = gelu(projected_x)
     
-    x = linear_projection(activation_output, w_2, b_2)
+    x = linear_projection(g, w_2, b_2)
+
     return x
+
 
 
 def transformer_block(x, block, number_of_heads):
     mlp, attn = block["mlp"], block["attn"]
     ln_1, ln_2 = block["ln_1"], block["ln_2"]
     g_1, b_1, g_2, b_2 = ln_1["g"], ln_1["b"], ln_2["g"], ln_2["b"]
-    """
-        Your code here
-    """
-    layer_nomr1 = layer_normalization(x, g_1, b_1)
-    foward_pass1 = multi_head_attention(layer_nomr1, attn, number_of_heads) + x
     
-    layer_nomr2 = layer_normalization(foward_pass1, g_2, b_2)
-    x = multi_head_attention(layer_nomr2, attn, number_of_heads) + x
+    normalized_layer_1 = layer_normalization(x, g_1, b_1)
+    forward_pass = multi_head_attention(normalized_layer_1, attn, number_of_heads)
+    input_x_added = forward_pass + x
+    x_store = input_x_added
 
+    normalized_layer_2 = layer_normalization(input_x_added, g_2, b_2)
+    feed_forward_out = feed_forward_network(normalized_layer_2, mlp)
+    x = feed_forward_out + x_store
+    
     return x
+
 
 
 def gpt2(inputs, wte, wpe, blocks, ln_f, number_of_heads):
     g_final, b_final = ln_f["g"], ln_f["b"]
     x = wte[inputs] + wpe[range(len(inputs))]  # Step 1: Sum positional encoding and token encoding 
-    """
-        Your code here
-    """
+
+    for block in blocks:
+        x = transformer_block(x, block, number_of_heads)
+    
+    x = layer_normalization(x, g_final, b_final)
+    
     return x @ wte.T
+
 
 
 def generate(input_text, tokens_to_generate=40, model_size="124M", models_dir="models", loading_bar=True):
@@ -223,4 +231,13 @@ if __name__ == "__main__":
     mlp = {"c_fc": {"w": w_1, "b": b_1}, "c_proj": {"w": w_2, "b": b_2}}
     x = feed_forward_network(x, mlp)
     print(x)
+    
+    print("\n[+]Part 2.4")
+    #print(generate("Hello! How are you?"))
+    #print(generate("What is the weather like tomorrow?"))
+    #print(generate("Tell me a story"))
+    
+    #print(generate("What is your favorite movie ?"))
+    #print(generate("Write me a poem"))
+    #print(generate("Do you know music ?"))
 

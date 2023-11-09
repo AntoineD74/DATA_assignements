@@ -1,0 +1,33 @@
+[+] Using default model size '124M'
+
+->generate("What is your favorite movie ?")
+
+I love the movie "The Matrix" and I love the movie "The Matrix Reloaded". I love the movie "The Matrix: The Final Mission" and I love the movie "The Matrix
+
+->generate("Write me a poem")
+
+or a poem that you think is funny.
+
+->generate("Do you know music ?")
+
+I don't know music. I don't know music. I don't know music. I don't know music. I don't know music. I don't know music. I don
+
+
+[+] Changing model size to '774M'
+
+->generate("What is your favorite movie ?")
+
+I love the movie "The Matrix" and I love the movie "The Dark Knight" and I love the movie "The Dark Knight Rises" and I love the movie "The Dark
+
+->generate("Write me a poem")
+
+I'm a poet, and I'm a writer.
+
+I'm a poet, and I'm a writer.
+
+I'm a
+
+->generate("Do you know music ?")
+
+
+I know music. I'm a musician. I'm a musician. I'm a musician. I'm a musician. I'm a musician. I'm a musician. I'm a musician
